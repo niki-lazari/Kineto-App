@@ -4,6 +4,7 @@ import base64
 import time
 import threading
 from AllModelsTrial import get_recommender
+import re
 #from capstonemasterv3 import get_recommender
 
 
@@ -34,6 +35,14 @@ if 'page' not in st.session_state:
 def go_to(page):
     st.session_state.page = page
     st.rerun()  # instantly re-run after navigation
+
+# Email validation 
+def is_valid_email(email: str) -> bool:
+    """Returns True if the email is in a valid format."""
+    if not email:
+        return False
+    pattern = r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"
+    return re.match(pattern, email) is not None
 
 # --- RESET WARNING ON PAGE LOAD ---
 if "show_warning" not in st.session_state:
@@ -79,7 +88,7 @@ if st.session_state.page == 'welcome':
 
     st.markdown("<p style='text-align:center;'>Your personalized movie recommendation assistant powered by hybrid AI.</p>", unsafe_allow_html=True)
 
-    logo_path = "kineto_logo.png"
+    logo_path = "C:/Users/Niki/OneDrive/Desktop/Northwestern/Fall 2025 - Q7\MSDS 498 - Capstone/Application/kineto_logo.png"
     with open(logo_path, "rb") as f:
         logo_base64 = base64.b64encode(f.read()).decode()
     st.markdown(
@@ -119,38 +128,73 @@ elif st.session_state.page == 'auth_menu':
 # --- PAGE 3: SIGN UP ---
 elif st.session_state.page == 'signup':
     st.markdown("<h2 style='text-align:center;'>Create Your Kineto Account</h2>", unsafe_allow_html=True)
+
+    # --- input fields ---
     email = st.text_input("Email")
     password = st.text_input("Create Password", type="password")
     verify = st.text_input("Verify Password", type="password")
 
+    # Initialize success flag
+    if "signup_success" not in st.session_state:
+        st.session_state.signup_success = False
+
     col1, col2, col3 = st.columns([3, 2, 3])
     with col1:
         if st.button("⬅ Back"):
+            # reset everything
+            st.session_state.warning_msg = None
+            st.session_state.error_msg = None
+            st.session_state.signup_success = False
             go_to('auth_menu')
 
     with col3:
         right_col1, right_col2 = st.columns([1, 1.15])
         with right_col2:
+
+            # --- CREATE ACCOUNT BUTTON ---
             if st.button("Create Account"):
-                # Reset previous messages
+
+                # Reset old messages
                 st.session_state.warning_msg = None
                 st.session_state.error_msg = None
+                st.session_state.signup_success = False
 
+                # Required fields
                 if not email or not password or not verify:
                     st.session_state.warning_msg = "⚠️ Please fill out all fields."
+
+                # Email format validation
+                elif not is_valid_email(email):
+                    st.session_state.error_msg = "❌ Please enter a valid email address."
+
+                # Password match
                 elif password != verify:
                     st.session_state.error_msg = "❌ Passwords do not match."
-                else:
-                    st.success("Account created successfully! Redirecting...")
-                    time.sleep(1.5)
-                    go_to('profile')
 
-    # --- Global feedback messages (full width, centered) ---
+                # Success
+                else:
+                    st.session_state.signup_success = True
+                    st.session_state.warning_msg = None
+                    st.session_state.error_msg = None
+                    # You can store user details here if needed
+
+    # --- FULL-WIDTH FEEDBACK MESSAGES (AFTER COLUMNS) ---
+
+    # Warning message
     if st.session_state.get("warning_msg"):
         st.warning(st.session_state.warning_msg)
 
+    # Error message
     if st.session_state.get("error_msg"):
         st.error(st.session_state.error_msg)
+
+    # Success message
+    if st.session_state.get("signup_success"):
+        st.success("Account created successfully! Redirecting...")
+        time.sleep(1.5)
+        st.session_state.signup_success = False  # reset after showing
+        go_to('profile')
+
 #------------------------------------------------------------------------------------------------------------------
 # --- PAGE 4: CREATE PROFILE ---
 elif st.session_state.page == 'profile':
@@ -191,7 +235,28 @@ elif st.session_state.page == 'profile':
     with col1:
         city = st.text_input("City")
     with col2:
-        state = st.selectbox("State / Province", ["Select...", "California", "Florida", "New York", "Texas", "Other"])
+        us_states = [
+    "Select...",
+    "Alabama", "Alaska", "Arizona", "Arkansas",
+    "California", "Colorado", "Connecticut",
+    "Delaware", "District of Columbia",
+    "Florida", "Georgia", "Hawaii", "Idaho",
+    "Illinois", "Indiana", "Iowa", "Kansas",
+    "Kentucky", "Louisiana", "Maine", "Maryland",
+    "Massachusetts", "Michigan", "Minnesota",
+    "Mississippi", "Missouri", "Montana",
+    "Nebraska", "Nevada", "New Hampshire",
+    "New Jersey", "New Mexico", "New York",
+    "North Carolina", "North Dakota", "Ohio",
+    "Oklahoma", "Oregon", "Pennsylvania",
+    "Rhode Island", "South Carolina",
+    "South Dakota", "Tennessee", "Texas",
+    "Utah", "Vermont", "Virginia",
+    "Washington", "West Virginia",
+    "Wisconsin", "Wyoming",
+    "Other"
+]
+        state = st.selectbox("State / Province", us_states)
     with col3:
         country = st.selectbox("Country", ["United States", "Canada", "Netherlands", "United Kingdom", "Germany", "Other"])
 
@@ -229,24 +294,47 @@ elif st.session_state.page == 'profile':
 # --- PAGE 5: LOG IN ---
 elif st.session_state.page == 'login':
     st.markdown("<h2 style='text-align:center;'>Log In to Kineto</h2>", unsafe_allow_html=True)
+
+    # --- initialize attempt flag ---
+    if "login_attempt" not in st.session_state:
+        st.session_state.login_attempt = False
+
     email = st.text_input("Email")
     password = st.text_input("Password", type="password")
 
     col1, col2, col3 = st.columns([3, 2, 3])
     with col1:
         if st.button("⬅ Back"):
+            st.session_state.login_attempt = False  # reset warnings
             go_to('auth_menu')
+
     with col3:
         right_col1, right_col2 = st.columns([1, 0.45])
         with right_col2:
+            
             if st.button("Log In"):
-                if email and password:
-                    st.session_state.warning_msg = None # reset previous warnings
-                    st.success("Login successful! Redirecting...")
-                    time.sleep(1.5)
-                    go_to('query')
-                else:
-                    st.warning("Please enter both email and password.")
+                # Only mark attempt when user actually presses button
+                st.session_state.login_attempt = True
+
+                # Validation happens AFTER the columns
+                st.session_state.login_email = email
+                st.session_state.login_password = password
+
+    # --- FULL WIDTH WARNINGS BELOW LAYOUT ---
+    if st.session_state.login_attempt:
+
+        if not st.session_state.login_email or not st.session_state.login_password:
+            st.warning("Please enter both email and password.")
+
+        elif not is_valid_email(st.session_state.login_email):
+            st.error("❌ Please enter a valid email address.")
+
+        else:
+            st.success("Login successful! Redirecting...")
+            time.sleep(1.5)
+            st.session_state.login_attempt = False  # reset so warning doesn't stick
+            go_to('query')
+
 #------------------------------------------------------------------------------------------------------------------
 # --- PAGE 6: QUERY + RECOMMENDATION ---
 elif st.session_state.page == 'query':
@@ -260,7 +348,7 @@ elif st.session_state.page == 'query':
     col1, col2, col3 = st.columns([1.5, 5, 3])
     with col1:
         if st.button("⬅ Back"):
-            go_to('profile')
+            go_to('auth_menu')
     with col3:
         get_recs = st.button("🎥 Get Recommendations", use_container_width=True)
 
@@ -285,10 +373,3 @@ elif st.session_state.page == 'query':
                         f"<small><i>Genres:</i> {', '.join(movie.get('genres', [])[:3])}</small>",
                         unsafe_allow_html=True
                     )
-
-## venv312\Scripts\activate
-## pip install -r requirements.txt (for all required libraries)
-## streamlit run app.py
-
-
-## Command prompt: python -m streamlit run app.py
