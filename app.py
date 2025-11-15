@@ -3,20 +3,21 @@ from PIL import Image
 import base64
 import time
 import threading
-from AllModelsTrial import get_recommender
 import re
-#from capstonemasterv3 import get_recommender
-
 
 @st.cache_resource
 def get_cached_recommender():
     """Loads and caches the recommender once."""
+    from AllModelsTrial import get_recommender
     return get_recommender()
 
+# --- BACKGROUND PRELOAD ---
 def preload_recommender():
     """Triggers the cache load in background."""
-    get_cached_recommender()
-
+    try:
+        _ = get_cached_recommender()
+    except Exception:
+        pass
 # Start background thread as soon as app starts
 if 'recommender_preloading' not in st.session_state:
     st.session_state.recommender_preloading = True
@@ -373,3 +374,4 @@ elif st.session_state.page == 'query':
                         f"<small><i>Genres:</i> {', '.join(movie.get('genres', [])[:3])}</small>",
                         unsafe_allow_html=True
                     )
+
