@@ -12,11 +12,11 @@ faiss-cpu==1.12.0
 
 # --- RECOMMENDER & DL ---
 
-tf-keras==2.19.0
 scikit-surprise==1.1.4
 
 # --- UTILITIES ---
 codecarbon==2.3.5
 protobuf<5
+
 
 
