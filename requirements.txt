@@ -7,16 +7,18 @@ scikit-learn==1.5.2
 # --- NLP / EMBEDDINGS ---
 sentence-transformers==2.7.0
 transformers==4.43.3
-torch==2.5.1
+torch==2.5.1 # --- torch==2.2.2
 faiss-cpu==1.12.0
 
 # --- RECOMMENDER & DL ---
-
-scikit-surprise==1.1.4
+# --- tensorflow==2.19.0
+# --- tf-keras==2.19.0
+# --- scikit-surprise==1.1.4
 
 # --- UTILITIES ---
 codecarbon==2.3.5
 protobuf<5
+
 
 
 
