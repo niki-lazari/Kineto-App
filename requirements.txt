@@ -1,42 +1,24 @@
-# -- If Python 12.2
-# --- CORE ---
-# --- streamlit==1.38.0
-# --- numpy==1.26.4
-# --- pandas==2.2.3
-# --- scikit-learn==1.5.2
-
-# --- NLP / EMBEDDINGS ---
-# --- sentence-transformers==2.7.0
-# --- transformers==4.43.3
-# ---torch==2.5.1 # --- torch==2.2.2
-# --- faiss-cpu==1.12.0
-
-# --- RECOMMENDER & DL ---
-# --- tensorflow==2.19.0
-# --- tf-keras==2.19.0
-# --- scikit-surprise==1.1.4
-
-# --- UTILITIES ---
-# --- codecarbon==2.3.5
-# --- protobuf<5
-
-#-------------------------------------------
-# --- If Python 13.3
 # --- CORE ---
 streamlit==1.38.0
-numpy
-pandas
-scikit-learn
+numpy==1.26.4
+pandas==2.2.3
+scikit-learn==1.5.2
 
 # --- NLP / EMBEDDINGS ---
-sentence-transformers==2.6.1
-transformers==4.37.2
-torch==2.2.2
-faiss-cpu==1.7.4.post2
+sentence-transformers==2.7.0
+transformers==4.43.3
+torch==2.5.1 # --- torch==2.2.2
+faiss-cpu==1.12.0
+
+# --- RECOMMENDER & DL ---
+tensorflow==2.19.0
+tf-keras==2.19.0
+scikit-surprise==1.1.4
 
 # --- UTILITIES ---
 codecarbon==2.3.5
 protobuf<5
+
 
 
 
