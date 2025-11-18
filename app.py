@@ -89,7 +89,7 @@ if st.session_state.page == 'welcome':
 
     st.markdown("<p style='text-align:center;'>Your personalized movie recommendation assistant powered by hybrid AI.</p>", unsafe_allow_html=True)
 
-    logo_path = "C:/Users/Niki/OneDrive/Desktop/Northwestern/Fall 2025 - Q7\MSDS 498 - Capstone/Application/kineto_logo.png"
+    logo_path = "kineto_logo.png"
     with open(logo_path, "rb") as f:
         logo_base64 = base64.b64encode(f.read()).decode()
     st.markdown(
@@ -374,4 +374,5 @@ elif st.session_state.page == 'query':
                         f"<small><i>Genres:</i> {', '.join(movie.get('genres', [])[:3])}</small>",
                         unsafe_allow_html=True
                     )
+
 
